@@ -1,5 +1,10 @@
 # TapPay NG (Next Generation)
 
+[![codecov](https://codecov.io/gh/7a6163/tappay-ng/graph/badge.svg?token=ADI8QVKYPI)](https://codecov.io/gh/7a6163/tappay-ng)
+![NPM Version](https://img.shields.io/npm/v/tappay-ng)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/7a6163/tappay-ng/ci.yml)
+
+
 TapPay SDK for Node.js with TypeScript support. Minimal dependencies implementation using only Node.js built-in modules.
 
 ## Features
