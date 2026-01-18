@@ -18,4 +18,15 @@ module.exports = {
   },
   coverageDirectory: 'coverage',
   verbose: true,
+  reporters: [
+    'default',
+    [
+      'jest-junit',
+      {
+        classNameTemplate: '{filepath}',
+        outputDirectory: 'test-results',
+        outputName: 'junit.xml',
+      },
+    ],
+  ],
 };
