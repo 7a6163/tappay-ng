@@ -53,6 +53,7 @@ jobs:
             echo "Version $PACKAGE_VERSION does not exist on NPM"
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
+          echo "version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
 
       - name: Publish to NPM
         if: steps.version-check.outputs.exists == 'false'
@@ -73,11 +74,10 @@ jobs:
 
       - name: Create GitHub Release
         if: steps.version-check.outputs.exists == 'false'
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ steps.version-check.outputs.version }}
-          release_name: Release v${{ steps.version-check.outputs.version }}
+          name: Release v${{ steps.version-check.outputs.version }}
           draft: false
           prerelease: false
+          generate_release_notes: true
