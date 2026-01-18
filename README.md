@@ -1,4 +1,4 @@
-# TapPay NG
+# TapPay NG (Next Generation)
 
 TapPay SDK for Node.js with TypeScript support. Minimal dependencies implementation using only Node.js built-in modules.
 
