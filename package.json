@@ -42,5 +42,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/7a6163/tappay-ng.git"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   }
 }
