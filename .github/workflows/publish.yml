@@ -17,6 +17,7 @@ jobs:
     permissions:
       contents: write
       id-token: write
+      attestations: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -42,28 +43,15 @@ jobs:
       - name: Build package
         run: npm run build
 
-      - name: Check if version exists on NPM
-        id: version-check
-        run: |
-          PACKAGE_NAME=$(node -p "require('./package.json').name")
-          PACKAGE_VERSION=$(node -p "require('./package.json').version")
-          if npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version 2>/dev/null; then
-            echo "Version $PACKAGE_VERSION already exists on NPM"
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "Version $PACKAGE_VERSION does not exist on NPM"
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-          echo "version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
-
       - name: Publish to NPM
-        if: steps.version-check.outputs.exists == 'false'
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        id: publish
+        uses: JS-DevTools/npm-publish@v4
+        with:
+          provenance: true
+          access: public
 
       - name: Create GitHub Release
-        if: steps.version-check.outputs.exists == 'false'
+        if: steps.publish.outputs.type != 'none'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}
@@ -72,4 +60,10 @@ jobs:
           prerelease: false
           generate_release_notes: true
           body: |
+            **Published:** `${{ steps.publish.outputs.id }}`
+            **Version:** `${{ steps.publish.outputs.version }}`
+            **Type:** `${{ steps.publish.outputs.type }}`
+
             See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/${{ github.ref_name }}/CHANGELOG.md) for details.
+
+            **NPM Package:** https://www.npmjs.com/package/${{ steps.publish.outputs.name }}/v/${{ steps.publish.outputs.version }}
