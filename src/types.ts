@@ -2,10 +2,18 @@
  * TapPay SDK Types
  */
 
+export class TapPayConfigError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'TapPayConfigError';
+  }
+}
+
 export interface TapPayConfig {
   partnerId: string;
   partnerKey: string;
-  merchantId: string;
+  merchantId?: string;
+  merchantGroupId?: string;
   env?: 'sandbox' | 'production';
 }
 
@@ -24,7 +32,8 @@ export interface Cardholder {
 export interface PayByPrimeRequest {
   prime: string;
   partner_key: string;
-  merchant_id: string;
+  merchant_id?: string;
+  merchant_group_id?: string;
   details: string;
   amount: number;
   currency?: Currency;
@@ -85,7 +94,8 @@ export interface PayByCardTokenRequest {
   card_key: string;
   card_token: string;
   partner_key: string;
-  merchant_id: string;
+  merchant_id?: string;
+  merchant_group_id?: string;
   amount: number;
   currency?: Currency;
   details: string;

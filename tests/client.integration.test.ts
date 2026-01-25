@@ -497,4 +497,236 @@ describe('TapPayClient Integration Tests', () => {
       expect(result.status).toBe(0);
     });
   });
+
+  describe('Merchant Group ID (MGID)', () => {
+    let mgidClient: TapPayClient;
+
+    beforeEach(() => {
+      mgidClient = new TapPayClient({
+        partnerId: 'test_partner_id',
+        partnerKey: 'test_partner_key',
+        merchantGroupId: 'test_merchant_group_id',
+        env: 'sandbox',
+      });
+    });
+
+    describe('payByPrime with MGID', () => {
+      it('should send merchant_group_id in request', async () => {
+        const responseData = {
+          status: 0,
+          msg: 'Success',
+          rec_trade_id: 'trade_123',
+        };
+
+        const promise = mgidClient.payByPrime({
+          prime: 'test_prime',
+          amount: 100,
+          details: 'Test payment',
+          cardholder: {
+            phone_number: '+886912345678',
+            name: 'Test User',
+            email: 'test@example.com',
+          },
+        });
+
+        mockResponse.emit('data', JSON.stringify(responseData));
+        mockResponse.emit('end');
+
+        await promise;
+
+        expect(mockRequest.write).toHaveBeenCalled();
+        const requestData = JSON.parse(mockRequest.write.mock.calls[0][0]);
+        expect(requestData.merchant_group_id).toBe('test_merchant_group_id');
+        expect(requestData.merchant_id).toBeUndefined();
+      });
+
+      it('should work with 3D Secure', async () => {
+        const responseData = {
+          status: 0,
+          msg: 'Success',
+          payment_url: 'https://example.com/3ds',
+        };
+
+        const promise = mgidClient.payByPrime({
+          prime: 'test_prime',
+          amount: 100,
+          details: 'Test payment',
+          cardholder: {
+            phone_number: '+886912345678',
+            name: 'Test User',
+            email: 'test@example.com',
+          },
+          threeDomainSecure: true,
+          frontendRedirectUrl: 'https://example.com/return',
+          backendNotifyUrl: 'https://example.com/notify',
+        });
+
+        mockResponse.emit('data', JSON.stringify(responseData));
+        mockResponse.emit('end');
+
+        await promise;
+
+        const requestData = JSON.parse(mockRequest.write.mock.calls[0][0]);
+        expect(requestData.merchant_group_id).toBe('test_merchant_group_id');
+        expect(requestData.merchant_id).toBeUndefined();
+        expect(requestData.three_domain_secure).toBe(true);
+      });
+
+      it('should work with instalment', async () => {
+        const responseData = {
+          status: 0,
+          msg: 'Success',
+          rec_trade_id: 'trade_123',
+        };
+
+        const promise = mgidClient.payByPrime({
+          prime: 'test_prime',
+          amount: 100,
+          details: 'Test payment',
+          cardholder: {
+            phone_number: '+886912345678',
+            name: 'Test User',
+            email: 'test@example.com',
+          },
+          instalment: 3,
+        });
+
+        mockResponse.emit('data', JSON.stringify(responseData));
+        mockResponse.emit('end');
+
+        await promise;
+
+        const requestData = JSON.parse(mockRequest.write.mock.calls[0][0]);
+        expect(requestData.merchant_group_id).toBe('test_merchant_group_id');
+        expect(requestData.merchant_id).toBeUndefined();
+        expect(requestData.instalment).toBe(3);
+      });
+
+      it('should work with delay capture', async () => {
+        const responseData = {
+          status: 0,
+          msg: 'Success',
+          rec_trade_id: 'trade_123',
+        };
+
+        const promise = mgidClient.payByPrime({
+          prime: 'test_prime',
+          amount: 100,
+          details: 'Test payment',
+          cardholder: {
+            phone_number: '+886912345678',
+            name: 'Test User',
+            email: 'test@example.com',
+          },
+          delayCapture: 7,
+        });
+
+        mockResponse.emit('data', JSON.stringify(responseData));
+        mockResponse.emit('end');
+
+        await promise;
+
+        const requestData = JSON.parse(mockRequest.write.mock.calls[0][0]);
+        expect(requestData.merchant_group_id).toBe('test_merchant_group_id');
+        expect(requestData.merchant_id).toBeUndefined();
+        expect(requestData.delay_capture_in_days).toBe(7);
+      });
+    });
+
+    describe('payByCardToken with MGID', () => {
+      it('should send merchant_group_id in request', async () => {
+        const responseData = {
+          status: 0,
+          msg: 'Success',
+          rec_trade_id: 'trade_123',
+        };
+
+        const promise = mgidClient.payByCardToken({
+          cardKey: 'key_123',
+          cardToken: 'token_123',
+          amount: 100,
+          details: 'Test payment',
+          cardholder: {
+            phone_number: '+886912345678',
+            name: 'Test User',
+            email: 'test@example.com',
+          },
+        });
+
+        mockResponse.emit('data', JSON.stringify(responseData));
+        mockResponse.emit('end');
+
+        await promise;
+
+        expect(mockRequest.write).toHaveBeenCalled();
+        const requestData = JSON.parse(mockRequest.write.mock.calls[0][0]);
+        expect(requestData.merchant_group_id).toBe('test_merchant_group_id');
+        expect(requestData.merchant_id).toBeUndefined();
+      });
+
+      it('should work with 3D Secure', async () => {
+        const responseData = {
+          status: 0,
+          msg: 'Success',
+          payment_url: 'https://example.com/3ds',
+        };
+
+        const promise = mgidClient.payByCardToken({
+          cardKey: 'key_123',
+          cardToken: 'token_123',
+          amount: 100,
+          details: 'Test payment',
+          cardholder: {
+            phone_number: '+886912345678',
+            name: 'Test User',
+            email: 'test@example.com',
+          },
+          threeDomainSecure: true,
+          frontendRedirectUrl: 'https://example.com/return',
+          backendNotifyUrl: 'https://example.com/notify',
+        });
+
+        mockResponse.emit('data', JSON.stringify(responseData));
+        mockResponse.emit('end');
+
+        await promise;
+
+        const requestData = JSON.parse(mockRequest.write.mock.calls[0][0]);
+        expect(requestData.merchant_group_id).toBe('test_merchant_group_id');
+        expect(requestData.merchant_id).toBeUndefined();
+        expect(requestData.three_domain_secure).toBe(true);
+      });
+
+      it('should work with instalment', async () => {
+        const responseData = {
+          status: 0,
+          msg: 'Success',
+          rec_trade_id: 'trade_123',
+        };
+
+        const promise = mgidClient.payByCardToken({
+          cardKey: 'key_123',
+          cardToken: 'token_123',
+          amount: 100,
+          details: 'Test payment',
+          cardholder: {
+            phone_number: '+886912345678',
+            name: 'Test User',
+            email: 'test@example.com',
+          },
+          instalment: 6,
+        });
+
+        mockResponse.emit('data', JSON.stringify(responseData));
+        mockResponse.emit('end');
+
+        await promise;
+
+        const requestData = JSON.parse(mockRequest.write.mock.calls[0][0]);
+        expect(requestData.merchant_group_id).toBe('test_merchant_group_id');
+        expect(requestData.merchant_id).toBeUndefined();
+        expect(requestData.instalment).toBe(6);
+      });
+    });
+  });
 });

@@ -28,6 +28,26 @@ describe('Types', () => {
       };
       expect(config).toBeDefined();
     });
+
+    it('should allow configuration with merchantId only', () => {
+      const config: TapPayConfig = {
+        partnerId: 'test_id',
+        partnerKey: 'test_key',
+        merchantId: 'test_merchant',
+        env: 'sandbox',
+      };
+      expect(config).toBeDefined();
+    });
+
+    it('should allow configuration with merchantGroupId only', () => {
+      const config: TapPayConfig = {
+        partnerId: 'test_id',
+        partnerKey: 'test_key',
+        merchantGroupId: 'test_merchant_group',
+        env: 'sandbox',
+      };
+      expect(config).toBeDefined();
+    });
   });
 
   describe('Currency', () => {
@@ -77,6 +97,22 @@ describe('Types', () => {
       };
       expect(request).toBeDefined();
     });
+
+    it('should allow merchant_group_id instead of merchant_id', () => {
+      const request: PayByPrimeRequest = {
+        prime: 'test_prime',
+        partner_key: 'test_key',
+        merchant_group_id: 'test_merchant_group',
+        details: 'Test payment',
+        amount: 100,
+        cardholder: {
+          phone_number: '+886912345678',
+          name: 'Test User',
+          email: 'test@example.com',
+        },
+      };
+      expect(request).toBeDefined();
+    });
   });
 
   describe('PayByCardTokenRequest', () => {
@@ -86,6 +122,23 @@ describe('Types', () => {
         card_token: 'test_card_token',
         partner_key: 'test_key',
         merchant_id: 'test_merchant',
+        amount: 100,
+        details: 'Test payment',
+        cardholder: {
+          phone_number: '+886912345678',
+          name: 'Test User',
+          email: 'test@example.com',
+        },
+      };
+      expect(request).toBeDefined();
+    });
+
+    it('should allow merchant_group_id instead of merchant_id', () => {
+      const request: PayByCardTokenRequest = {
+        card_key: 'test_card_key',
+        card_token: 'test_card_token',
+        partner_key: 'test_key',
+        merchant_group_id: 'test_merchant_group',
         amount: 100,
         details: 'Test payment',
         cardholder: {

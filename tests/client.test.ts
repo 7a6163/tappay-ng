@@ -1,4 +1,5 @@
 import { TapPayClient } from '../src/client';
+import { TapPayConfigError } from '../src/types';
 
 describe('TapPayClient', () => {
   let client: TapPayClient;
@@ -34,6 +35,104 @@ describe('TapPayClient', () => {
         merchantId: 'test_merchant_id',
       });
       expect(defaultClient).toBeInstanceOf(TapPayClient);
+    });
+
+    it('should create a client with merchantGroupId', () => {
+      const mgidClient = new TapPayClient({
+        partnerId: 'test_partner_id',
+        partnerKey: 'test_partner_key',
+        merchantGroupId: 'test_merchant_group_id',
+        env: 'sandbox',
+      });
+      expect(mgidClient).toBeInstanceOf(TapPayClient);
+    });
+
+    it('should throw error when both merchantId and merchantGroupId are provided', () => {
+      expect(() => {
+        new TapPayClient({
+          partnerId: 'test_partner_id',
+          partnerKey: 'test_partner_key',
+          merchantId: 'test_merchant_id',
+          merchantGroupId: 'test_merchant_group_id',
+          env: 'sandbox',
+        });
+      }).toThrow(TapPayConfigError);
+      expect(() => {
+        new TapPayClient({
+          partnerId: 'test_partner_id',
+          partnerKey: 'test_partner_key',
+          merchantId: 'test_merchant_id',
+          merchantGroupId: 'test_merchant_group_id',
+          env: 'sandbox',
+        });
+      }).toThrow('merchantId and merchantGroupId cannot be used together');
+    });
+
+    it('should throw error when neither merchantId nor merchantGroupId is provided', () => {
+      expect(() => {
+        new TapPayClient({
+          partnerId: 'test_partner_id',
+          partnerKey: 'test_partner_key',
+          env: 'sandbox',
+        });
+      }).toThrow(TapPayConfigError);
+      expect(() => {
+        new TapPayClient({
+          partnerId: 'test_partner_id',
+          partnerKey: 'test_partner_key',
+          env: 'sandbox',
+        });
+      }).toThrow('Either merchantId or merchantGroupId must be provided');
+    });
+
+    it('should throw error when merchantId is empty string', () => {
+      expect(() => {
+        new TapPayClient({
+          partnerId: 'test_partner_id',
+          partnerKey: 'test_partner_key',
+          merchantId: '',
+          env: 'sandbox',
+        });
+      }).toThrow(TapPayConfigError);
+      expect(() => {
+        new TapPayClient({
+          partnerId: 'test_partner_id',
+          partnerKey: 'test_partner_key',
+          merchantId: '',
+          env: 'sandbox',
+        });
+      }).toThrow('Either merchantId or merchantGroupId must be provided');
+    });
+
+    it('should throw error when merchantGroupId is empty string', () => {
+      expect(() => {
+        new TapPayClient({
+          partnerId: 'test_partner_id',
+          partnerKey: 'test_partner_key',
+          merchantGroupId: '',
+          env: 'sandbox',
+        });
+      }).toThrow(TapPayConfigError);
+      expect(() => {
+        new TapPayClient({
+          partnerId: 'test_partner_id',
+          partnerKey: 'test_partner_key',
+          merchantGroupId: '',
+          env: 'sandbox',
+        });
+      }).toThrow('Either merchantId or merchantGroupId must be provided');
+    });
+
+    it('should throw error when both are empty strings', () => {
+      expect(() => {
+        new TapPayClient({
+          partnerId: 'test_partner_id',
+          partnerKey: 'test_partner_key',
+          merchantId: '',
+          merchantGroupId: '',
+          env: 'sandbox',
+        });
+      }).toThrow(TapPayConfigError);
     });
   });
 

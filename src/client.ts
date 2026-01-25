@@ -1,6 +1,7 @@
 import * as https from 'https';
 import {
   TapPayConfig,
+  TapPayConfigError,
   PayByPrimeRequest,
   PayByPrimeResponse,
   PayByCardTokenRequest,
@@ -20,13 +21,26 @@ const PRODUCTION_BASE_URL = 'prod.tappaysdk.com';
 export class TapPayClient {
   private partnerId: string;
   private partnerKey: string;
-  private merchantId: string;
+  private merchantId?: string;
+  private merchantGroupId?: string;
   private baseUrl: string;
 
   constructor(config: TapPayConfig) {
+    const hasMerchantId = config.merchantId !== undefined && config.merchantId !== '';
+    const hasMerchantGroupId = config.merchantGroupId !== undefined && config.merchantGroupId !== '';
+
+    if (!hasMerchantId && !hasMerchantGroupId) {
+      throw new TapPayConfigError('Either merchantId or merchantGroupId must be provided');
+    }
+
+    if (hasMerchantId && hasMerchantGroupId) {
+      throw new TapPayConfigError('merchantId and merchantGroupId cannot be used together');
+    }
+
     this.partnerId = config.partnerId;
     this.partnerKey = config.partnerKey;
     this.merchantId = config.merchantId;
+    this.merchantGroupId = config.merchantGroupId;
     this.baseUrl =
       config.env === 'production' ? PRODUCTION_BASE_URL : SANDBOX_BASE_URL;
   }
@@ -107,7 +121,6 @@ export class TapPayClient {
     const requestData: PayByPrimeRequest = {
       prime: params.prime,
       partner_key: this.partnerKey,
-      merchant_id: this.merchantId,
       details: params.details,
       amount: params.amount,
       currency: params.currency || 'TWD',
@@ -117,6 +130,14 @@ export class TapPayClient {
       bank_transaction_id: params.bankTransactionId,
       three_domain_secure: params.threeDomainSecure,
     };
+
+    if (this.merchantId) {
+      requestData.merchant_id = this.merchantId;
+    }
+
+    if (this.merchantGroupId) {
+      requestData.merchant_group_id = this.merchantGroupId;
+    }
 
     if (params.frontendRedirectUrl && params.backendNotifyUrl) {
       requestData.result_url = {
@@ -158,7 +179,6 @@ export class TapPayClient {
       card_key: params.cardKey,
       card_token: params.cardToken,
       partner_key: this.partnerKey,
-      merchant_id: this.merchantId,
       amount: params.amount,
       currency: params.currency || 'TWD',
       details: params.details,
@@ -167,6 +187,14 @@ export class TapPayClient {
       bank_transaction_id: params.bankTransactionId,
       three_domain_secure: params.threeDomainSecure,
     };
+
+    if (this.merchantId) {
+      requestData.merchant_id = this.merchantId;
+    }
+
+    if (this.merchantGroupId) {
+      requestData.merchant_group_id = this.merchantGroupId;
+    }
 
     if (params.frontendRedirectUrl && params.backendNotifyUrl) {
       requestData.result_url = {
