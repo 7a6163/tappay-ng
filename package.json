@@ -1,6 +1,6 @@
 {
   "name": "tappay-ng",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "TapPay SDK for Node.js with TypeScript support - minimal dependencies",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,7 +18,9 @@
     "sdk",
     "typescript",
     "taiwan",
-    "credit-card"
+    "credit-card",
+    "e-invoice",
+    "einvoice"
   ],
   "author": "",
   "license": "MIT",
