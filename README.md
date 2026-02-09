@@ -27,6 +27,7 @@ npm install tappay-ng
 - **Pay by Card Token** - Process payment using stored card token (for recurring payments)
 - **Refund** - Process full or partial refund
 - **Record Query** - Query transaction records
+- **E-Invoice** - Issue, void, reissue, allowance, and query e-invoices (Taiwan)
 
 ## Quick Start
 
@@ -236,6 +237,117 @@ Query transaction records.
 - `orderNumber` (optional) - Order number filter
 - `recTradeId` (optional) - Transaction ID filter
 
+### E-Invoice
+
+The E-Invoice client uses a separate `EInvoiceClient` class:
+
+```typescript
+import { EInvoiceClient } from 'tappay-ng';
+
+const einvoice = new EInvoiceClient({
+  partnerKey: 'YOUR_PARTNER_KEY',
+  env: 'sandbox', // or 'production'
+});
+```
+
+#### Issue an Invoice
+
+```typescript
+const response = await einvoice.issueInvoice({
+  orderNumber: 'ORDER-123',
+  orderDate: '2024-01-15',
+  buyerEmail: 'buyer@example.com',
+  totalAmount: 1050,
+  taxAmount: 50,
+  notifyUrl: 'https://your-site.com/api/einvoice/notify',
+  details: [
+    {
+      sequence_id: '1',
+      description: 'Product A',
+      unit_price: 500,
+      quantity: 2,
+      sub_amount: 1000,
+      tax_type: 1, // 1: taxable, 2: zero-tax, 3: tax-free
+    },
+  ],
+  // Optional fields
+  buyerIdentifier: '12345678', // buyer's tax ID (統一編號) for B2B
+  invoiceType: 2, // 1: personal (B2C), 2: business (B2B)
+  carrier: { type: 0, number: '/ABC1234' }, // 0: phone barcode, 1: natural person, 2: EasyCard
+  npoban: '8888', // donation code (捐贈碼)
+});
+
+console.log('Invoice ID:', response.rec_invoice_id);
+console.log('Invoice Number:', response.invoice_number);
+```
+
+#### Void an Invoice
+
+```typescript
+const response = await einvoice.voidInvoice({
+  recInvoiceId: 'rec_invoice_id',
+  invoiceNumber: 'AB12345678',
+  voidOrderId: 'VOID-001',
+  voidReason: 'Order cancelled',
+});
+```
+
+#### Void and Reissue
+
+```typescript
+const response = await einvoice.voidWithReissue({
+  recInvoiceId: 'rec_invoice_id',
+  reissueOrderId: 'REISSUE-001',
+  reissueReason: 'Buyer info correction',
+});
+```
+
+#### Issue an Allowance (折讓)
+
+```typescript
+const response = await einvoice.allowanceInvoice({
+  recInvoiceId: 'rec_invoice_id',
+  allowanceAmount: 100,
+  allowanceReason: 'Partial return',
+  allowanceSaleAmount: 95,
+  allowanceTaxAmount: 5,
+  details: [
+    {
+      sequence_id: '1',
+      description: 'Returned item',
+      unit_price: 100,
+      quantity: 1,
+      sub_amount: 100,
+      tax_type: 1,
+      tax_amount: 5,
+    },
+  ],
+});
+```
+
+#### Query Invoice
+
+```typescript
+const response = await einvoice.queryInvoice({
+  recInvoiceId: 'rec_invoice_id',
+});
+
+console.log('Invoice Status:', response.invoice_status);
+console.log('Invoice Number:', response.invoice_number);
+console.log('Total Amount:', response.total_amount);
+```
+
+#### Query Allowance
+
+```typescript
+const response = await einvoice.queryAllowance({
+  recInvoiceId: 'rec_invoice_id',
+  allowanceNumber: 'allowance_number',
+});
+
+console.log('Allowance Amount:', response.allowance_amount);
+```
+
 ## Error Handling
 
 ```typescript
@@ -267,6 +379,12 @@ import {
   Cardholder,
   Currency,
   TapPayError,
+  // E-Invoice types
+  EInvoiceClient,
+  EInvoiceConfig,
+  EInvoiceDetail,
+  EInvoiceCarrier,
+  EInvoiceError,
 } from 'tappay-ng';
 ```
 
