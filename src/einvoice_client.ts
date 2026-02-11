@@ -76,7 +76,7 @@ export class EInvoiceClient {
             } else {
               resolve(response as T);
             }
-          } catch (error) {
+          } catch (_error) {
             reject(new Error('Failed to parse response'));
           }
         });
