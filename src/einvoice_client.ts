@@ -207,7 +207,11 @@ export class EInvoiceClient {
       requestData.remark = params.remark;
     }
 
-    return this.request<EInvoiceIssueResponse>('/einvoice/issue', requestData, params.requestId);
+    return this.request<EInvoiceIssueResponse>(
+      '/einvoice/issue',
+      requestData,
+      params.requestId,
+    );
   }
 
   async voidInvoice(params: {
@@ -230,7 +234,11 @@ export class EInvoiceClient {
       requestData.void_notify_email = params.voidNotifyEmail;
     }
 
-    return this.request<EInvoiceVoidResponse>('/einvoice/void', requestData, params.requestId);
+    return this.request<EInvoiceVoidResponse>(
+      '/einvoice/void',
+      requestData,
+      params.requestId,
+    );
   }
 
   async voidWithReissue(params: {
@@ -298,7 +306,11 @@ export class EInvoiceClient {
       rec_invoice_id: params.recInvoiceId,
     };
 
-    return this.request<EInvoiceQueryResponse>('/einvoice/query', requestData, params.requestId);
+    return this.request<EInvoiceQueryResponse>(
+      '/einvoice/query',
+      requestData,
+      params.requestId,
+    );
   }
 
   async queryAllowance(params: {
