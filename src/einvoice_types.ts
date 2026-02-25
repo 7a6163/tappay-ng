@@ -3,12 +3,32 @@
  * Based on 電子發票 Open API 規格 商戶 V1.4
  */
 
+/** 發票通知方式：AUTO 為自動寄送，MANU 為手動寄送 */
 export type NotifyEmail = 'AUTO' | 'MANU';
 
+/**
+ * 電子發票稅額種類
+ * - `1` 一般稅額 (default)
+ * - `2` 特種稅額
+ *
+ * @note 預計 2025/6 月起必填且支援檢核
+ */
 export type InvoiceType = 1 | 2;
 
+/**
+ * 載具類型
+ * - `0` 會員載具 (default)
+ * - `1` 手機條碼載具
+ * - `2` 自然人憑證載具
+ */
 export type CarrierType = 0 | 1 | 2;
 
+/**
+ * 品項課稅別
+ * - `1` 應稅
+ * - `2` 零稅率
+ * - `3` 免稅
+ */
 export type TaxType = 1 | 2 | 3;
 
 export type PaymentType = 'CREDIT_CARD' | 'E_WALLET';
