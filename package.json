@@ -1,6 +1,6 @@
 {
   "name": "tappay-ng",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "description": "TapPay SDK for Node.js with TypeScript support - minimal dependencies",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

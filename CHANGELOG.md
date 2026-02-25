@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2] - 2026-02-26
+
+### Changed
+- Corrected `InvoiceType` JSDoc: `1` is 一般稅額 (VAT, 加值型), `2` is 特種稅額 (非加值型, for financial/special industries) — not related to B2B/B2C
+- Updated README `issueInvoice` example: `invoiceType` set to `1` with accurate description; `buyerIdentifier` comment clarified as the B2B indicator
+
+## [1.2.1] - 2026-02-26
+
+### Added
+- `request-id` header support on all `EInvoiceClient` methods (`issueInvoice`, `voidInvoice`, `voidWithReissue`, `allowanceInvoice`, `queryInvoice`, `queryAllowance`) — optional field; if omitted, TapPay auto-generates one
+
+### Changed
+- Added JSDoc comments to e-invoice types (`NotifyEmail`, `InvoiceType`, `CarrierType`, `TaxType`) with Chinese descriptions matching API spec V1.4
+- Fixed `CarrierType` documentation: `0` 會員載具 (default), `1` 手機條碼載具, `2` 自然人憑證載具
+- Added `@note` to `InvoiceType`: mandatory and validated from 2025/6 onwards per TapPay spec
+
 ## [1.2.0] - 2026-02-09
 
 ### Added
