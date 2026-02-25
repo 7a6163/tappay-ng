@@ -1,27 +1,27 @@
-import * as https from 'https';
-import {
+import * as https from 'node:https';
+import type {
+  CustomsClearanceMarkEnum,
+  EInvoiceAllowanceDetail,
+  EInvoiceAllowanceRequest,
+  EInvoiceAllowanceResponse,
+  EInvoiceCarrier,
   EInvoiceConfig,
+  EInvoiceCurrency,
+  EInvoiceDetail,
+  EInvoiceError,
   EInvoiceIssueRequest,
   EInvoiceIssueResponse,
+  EInvoiceQueryAllowanceRequest,
+  EInvoiceQueryAllowanceResponse,
+  EInvoiceQueryRequest,
+  EInvoiceQueryResponse,
   EInvoiceVoidRequest,
   EInvoiceVoidResponse,
   EInvoiceVoidWithReissueRequest,
   EInvoiceVoidWithReissueResponse,
-  EInvoiceAllowanceRequest,
-  EInvoiceAllowanceResponse,
-  EInvoiceQueryRequest,
-  EInvoiceQueryResponse,
-  EInvoiceQueryAllowanceRequest,
-  EInvoiceQueryAllowanceResponse,
-  EInvoiceError,
-  EInvoiceDetail,
-  EInvoiceCarrier,
-  EInvoiceAllowanceDetail,
-  NotifyEmail,
   InvoiceType,
+  NotifyEmail,
   PaymentType,
-  EInvoiceCurrency,
-  CustomsClearanceMarkEnum,
 } from './einvoice_types';
 
 const SANDBOX_BASE_URL = 'sandbox-invoice.tappaysdk.com';
@@ -37,10 +37,7 @@ export class EInvoiceClient {
       config.env === 'production' ? PRODUCTION_BASE_URL : SANDBOX_BASE_URL;
   }
 
-  private request<T>(
-    path: string,
-    data: any
-  ): Promise<T> {
+  private request<T>(path: string, data: any): Promise<T> {
     return new Promise((resolve, reject) => {
       const postData = JSON.stringify(data);
 
@@ -240,7 +237,10 @@ export class EInvoiceClient {
       reissue_reason: params.reissueReason,
     };
 
-    return this.request<EInvoiceVoidWithReissueResponse>('/einvoice/void-with-reissue', requestData);
+    return this.request<EInvoiceVoidWithReissueResponse>(
+      '/einvoice/void-with-reissue',
+      requestData,
+    );
   }
 
   async allowanceInvoice(params: {
@@ -271,7 +271,10 @@ export class EInvoiceClient {
       requestData.allowance_notify_email = params.allowanceNotifyEmail;
     }
 
-    return this.request<EInvoiceAllowanceResponse>('/einvoice/allowance', requestData);
+    return this.request<EInvoiceAllowanceResponse>(
+      '/einvoice/allowance',
+      requestData,
+    );
   }
 
   async queryInvoice(params: {
@@ -295,6 +298,9 @@ export class EInvoiceClient {
       allowance_number: params.allowanceNumber,
     };
 
-    return this.request<EInvoiceQueryAllowanceResponse>('/einvoice/query-allowance', requestData);
+    return this.request<EInvoiceQueryAllowanceResponse>(
+      '/einvoice/query-allowance',
+      requestData,
+    );
   }
 }
