@@ -1,8 +1,8 @@
-import * as https from 'https';
+import * as https from 'node:https';
 import { EInvoiceClient } from '../src/einvoice_client';
 import { EventEmitter } from 'events';
 
-jest.mock('https');
+jest.mock('node:https');
 
 describe('EInvoiceClient Integration Tests', () => {
   let client: EInvoiceClient;
@@ -284,6 +284,38 @@ describe('EInvoiceClient Integration Tests', () => {
         status: 1,
         msg: 'Failed',
       });
+    });
+
+    it('should send request-id header when requestId is provided', async () => {
+      const responseData = { status: 0, msg: 'SUCCESS' };
+
+      const promise = client.issueInvoice({
+        orderNumber: 'TP_TEST_01',
+        orderDate: '20250212',
+        buyerEmail: 'test@example.com',
+        totalAmount: 300,
+        details: [
+          {
+            sequence_id: '001',
+            sub_amount: 300,
+            unit_price: 300,
+            quantity: 1,
+            description: 'example',
+            tax_type: 1,
+          },
+        ],
+        taxAmount: 0,
+        notifyUrl: 'https://example.com/notify',
+        requestId: 'req-123',
+      });
+
+      mockResponse.emit('data', JSON.stringify(responseData));
+      mockResponse.emit('end');
+
+      await promise;
+
+      const options = (https.request as jest.Mock).mock.calls[0][0];
+      expect(options.headers['request-id']).toBe('req-123');
     });
 
     it('should handle JSON parse error', async () => {

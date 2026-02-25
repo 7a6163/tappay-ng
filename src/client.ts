@@ -1,18 +1,18 @@
-import * as https from 'https';
+import * as https from 'node:https';
 import {
-  TapPayConfig,
+  type Cardholder,
+  type Currency,
+  type PayByCardTokenRequest,
+  type PayByCardTokenResponse,
+  type PayByPrimeRequest,
+  type PayByPrimeResponse,
+  type RecordRequest,
+  type RecordResponse,
+  type RefundRequest,
+  type RefundResponse,
+  type TapPayConfig,
   TapPayConfigError,
-  PayByPrimeRequest,
-  PayByPrimeResponse,
-  PayByCardTokenRequest,
-  PayByCardTokenResponse,
-  RefundRequest,
-  RefundResponse,
-  RecordRequest,
-  RecordResponse,
-  TapPayError,
-  Cardholder,
-  Currency,
+  type TapPayError,
 } from './types';
 
 const SANDBOX_BASE_URL = 'sandbox.tappaysdk.com';
@@ -26,15 +26,21 @@ export class TapPayClient {
   private baseUrl: string;
 
   constructor(config: TapPayConfig) {
-    const hasMerchantId = config.merchantId !== undefined && config.merchantId !== '';
-    const hasMerchantGroupId = config.merchantGroupId !== undefined && config.merchantGroupId !== '';
+    const hasMerchantId =
+      config.merchantId !== undefined && config.merchantId !== '';
+    const hasMerchantGroupId =
+      config.merchantGroupId !== undefined && config.merchantGroupId !== '';
 
     if (!hasMerchantId && !hasMerchantGroupId) {
-      throw new TapPayConfigError('Either merchantId or merchantGroupId must be provided');
+      throw new TapPayConfigError(
+        'Either merchantId or merchantGroupId must be provided',
+      );
     }
 
     if (hasMerchantId && hasMerchantGroupId) {
-      throw new TapPayConfigError('merchantId and merchantGroupId cannot be used together');
+      throw new TapPayConfigError(
+        'merchantId and merchantGroupId cannot be used together',
+      );
     }
 
     this.partnerId = config.partnerId;
@@ -45,10 +51,7 @@ export class TapPayClient {
       config.env === 'production' ? PRODUCTION_BASE_URL : SANDBOX_BASE_URL;
   }
 
-  private request<T>(
-    path: string,
-    data: any
-  ): Promise<T> {
+  private request<T>(path: string, data: any): Promise<T> {
     return new Promise((resolve, reject) => {
       const postData = JSON.stringify(data);
 
@@ -154,7 +157,10 @@ export class TapPayClient {
       requestData.delay_capture_in_days = params.delayCapture;
     }
 
-    return this.request<PayByPrimeResponse>('/tpc/payment/pay-by-prime', requestData);
+    return this.request<PayByPrimeResponse>(
+      '/tpc/payment/pay-by-prime',
+      requestData,
+    );
   }
 
   /**
@@ -207,7 +213,10 @@ export class TapPayClient {
       requestData.instalment = params.instalment;
     }
 
-    return this.request<PayByCardTokenResponse>('/tpc/payment/pay-by-token', requestData);
+    return this.request<PayByCardTokenResponse>(
+      '/tpc/payment/pay-by-token',
+      requestData,
+    );
   }
 
   /**

@@ -3,12 +3,32 @@
  * Based on 電子發票 Open API 規格 商戶 V1.4
  */
 
+/** 發票通知方式：AUTO 為自動寄送，MANU 為手動寄送 */
 export type NotifyEmail = 'AUTO' | 'MANU';
 
+/**
+ * 電子發票稅額種類
+ * - `1` 一般稅額（加值型營業稅 VAT）：適用一般公司行號，稅率 5%，進項可扣抵 (default)
+ * - `2` 特種稅額（非加值型營業稅）：適用金融業、特種飲食業、小規模營業人等，依行業別稅率不同，進項不可扣抵
+ *
+ * @note 預計 2025/6 月起必填且支援檢核
+ */
 export type InvoiceType = 1 | 2;
 
+/**
+ * 載具類型
+ * - `0` 會員載具 (default)
+ * - `1` 手機條碼載具
+ * - `2` 自然人憑證載具
+ */
 export type CarrierType = 0 | 1 | 2;
 
+/**
+ * 品項課稅別
+ * - `1` 應稅
+ * - `2` 零稅率
+ * - `3` 免稅
+ */
 export type TaxType = 1 | 2 | 3;
 
 export type PaymentType = 'CREDIT_CARD' | 'E_WALLET';

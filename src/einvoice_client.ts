@@ -1,27 +1,27 @@
-import * as https from 'https';
-import {
+import * as https from 'node:https';
+import type {
+  CustomsClearanceMarkEnum,
+  EInvoiceAllowanceDetail,
+  EInvoiceAllowanceRequest,
+  EInvoiceAllowanceResponse,
+  EInvoiceCarrier,
   EInvoiceConfig,
+  EInvoiceCurrency,
+  EInvoiceDetail,
+  EInvoiceError,
   EInvoiceIssueRequest,
   EInvoiceIssueResponse,
+  EInvoiceQueryAllowanceRequest,
+  EInvoiceQueryAllowanceResponse,
+  EInvoiceQueryRequest,
+  EInvoiceQueryResponse,
   EInvoiceVoidRequest,
   EInvoiceVoidResponse,
   EInvoiceVoidWithReissueRequest,
   EInvoiceVoidWithReissueResponse,
-  EInvoiceAllowanceRequest,
-  EInvoiceAllowanceResponse,
-  EInvoiceQueryRequest,
-  EInvoiceQueryResponse,
-  EInvoiceQueryAllowanceRequest,
-  EInvoiceQueryAllowanceResponse,
-  EInvoiceError,
-  EInvoiceDetail,
-  EInvoiceCarrier,
-  EInvoiceAllowanceDetail,
-  NotifyEmail,
   InvoiceType,
+  NotifyEmail,
   PaymentType,
-  EInvoiceCurrency,
-  CustomsClearanceMarkEnum,
 } from './einvoice_types';
 
 const SANDBOX_BASE_URL = 'sandbox-invoice.tappaysdk.com';
@@ -37,23 +37,26 @@ export class EInvoiceClient {
       config.env === 'production' ? PRODUCTION_BASE_URL : SANDBOX_BASE_URL;
   }
 
-  private request<T>(
-    path: string,
-    data: any
-  ): Promise<T> {
+  private request<T>(path: string, data: any, requestId?: string): Promise<T> {
     return new Promise((resolve, reject) => {
       const postData = JSON.stringify(data);
+
+      const headers: Record<string, string | number> = {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(postData),
+        'x-api-key': this.partnerKey,
+      };
+
+      if (requestId !== undefined) {
+        headers['request-id'] = requestId;
+      }
 
       const options: https.RequestOptions = {
         hostname: this.baseUrl,
         port: 443,
         path: path,
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(postData),
-          'x-api-key': this.partnerKey,
-        },
+        headers,
       };
 
       const req = https.request(options, (res) => {
@@ -118,6 +121,7 @@ export class EInvoiceClient {
     invoiceNumber?: string;
     notifyUrl: string;
     remark?: string;
+    requestId?: string;
   }): Promise<EInvoiceIssueResponse> {
     const requestData: EInvoiceIssueRequest = {
       partner_key: this.partnerKey,
@@ -203,7 +207,11 @@ export class EInvoiceClient {
       requestData.remark = params.remark;
     }
 
-    return this.request<EInvoiceIssueResponse>('/einvoice/issue', requestData);
+    return this.request<EInvoiceIssueResponse>(
+      '/einvoice/issue',
+      requestData,
+      params.requestId,
+    );
   }
 
   async voidInvoice(params: {
@@ -212,6 +220,7 @@ export class EInvoiceClient {
     voidOrderId: string;
     voidReason: string;
     voidNotifyEmail?: NotifyEmail;
+    requestId?: string;
   }): Promise<EInvoiceVoidResponse> {
     const requestData: EInvoiceVoidRequest = {
       partner_key: this.partnerKey,
@@ -225,13 +234,18 @@ export class EInvoiceClient {
       requestData.void_notify_email = params.voidNotifyEmail;
     }
 
-    return this.request<EInvoiceVoidResponse>('/einvoice/void', requestData);
+    return this.request<EInvoiceVoidResponse>(
+      '/einvoice/void',
+      requestData,
+      params.requestId,
+    );
   }
 
   async voidWithReissue(params: {
     recInvoiceId: string;
     reissueOrderId: string;
     reissueReason: string;
+    requestId?: string;
   }): Promise<EInvoiceVoidWithReissueResponse> {
     const requestData: EInvoiceVoidWithReissueRequest = {
       partner_key: this.partnerKey,
@@ -240,7 +254,11 @@ export class EInvoiceClient {
       reissue_reason: params.reissueReason,
     };
 
-    return this.request<EInvoiceVoidWithReissueResponse>('/einvoice/void-with-reissue', requestData);
+    return this.request<EInvoiceVoidWithReissueResponse>(
+      '/einvoice/void-with-reissue',
+      requestData,
+      params.requestId,
+    );
   }
 
   async allowanceInvoice(params: {
@@ -252,6 +270,7 @@ export class EInvoiceClient {
     allowanceReason: string;
     allowanceSaleAmount: number;
     allowanceTaxAmount: number;
+    requestId?: string;
   }): Promise<EInvoiceAllowanceResponse> {
     const requestData: EInvoiceAllowanceRequest = {
       partner_key: this.partnerKey,
@@ -271,23 +290,33 @@ export class EInvoiceClient {
       requestData.allowance_notify_email = params.allowanceNotifyEmail;
     }
 
-    return this.request<EInvoiceAllowanceResponse>('/einvoice/allowance', requestData);
+    return this.request<EInvoiceAllowanceResponse>(
+      '/einvoice/allowance',
+      requestData,
+      params.requestId,
+    );
   }
 
   async queryInvoice(params: {
     recInvoiceId: string;
+    requestId?: string;
   }): Promise<EInvoiceQueryResponse> {
     const requestData: EInvoiceQueryRequest = {
       partner_key: this.partnerKey,
       rec_invoice_id: params.recInvoiceId,
     };
 
-    return this.request<EInvoiceQueryResponse>('/einvoice/query', requestData);
+    return this.request<EInvoiceQueryResponse>(
+      '/einvoice/query',
+      requestData,
+      params.requestId,
+    );
   }
 
   async queryAllowance(params: {
     recInvoiceId: string;
     allowanceNumber: string;
+    requestId?: string;
   }): Promise<EInvoiceQueryAllowanceResponse> {
     const requestData: EInvoiceQueryAllowanceRequest = {
       partner_key: this.partnerKey,
@@ -295,6 +324,10 @@ export class EInvoiceClient {
       allowance_number: params.allowanceNumber,
     };
 
-    return this.request<EInvoiceQueryAllowanceResponse>('/einvoice/query-allowance', requestData);
+    return this.request<EInvoiceQueryAllowanceResponse>(
+      '/einvoice/query-allowance',
+      requestData,
+      params.requestId,
+    );
   }
 }

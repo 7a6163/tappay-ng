@@ -1,9 +1,9 @@
-import * as https from 'https';
+import * as https from 'node:https';
 import { TapPayClient } from '../src/client';
 import { EventEmitter } from 'events';
 
 // Mock https module
-jest.mock('https');
+jest.mock('node:https');
 
 describe('TapPayClient Integration Tests', () => {
   let client: TapPayClient;
@@ -188,6 +188,29 @@ describe('TapPayClient Integration Tests', () => {
       await expect(promise).rejects.toEqual({
         status: 1,
         msg: 'Invalid prime',
+      });
+    });
+
+    it('should use "Unknown error" when API error has no msg field', async () => {
+      const errorData = { status: 1 };
+
+      const promise = client.payByPrime({
+        prime: 'invalid_prime',
+        amount: 100,
+        details: 'Test payment',
+        cardholder: {
+          phone_number: '+886912345678',
+          name: 'Test User',
+          email: 'test@example.com',
+        },
+      });
+
+      mockResponse.emit('data', JSON.stringify(errorData));
+      mockResponse.emit('end');
+
+      await expect(promise).rejects.toEqual({
+        status: 1,
+        msg: 'Unknown error',
       });
     });
 
